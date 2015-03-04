@@ -1,0 +1,54 @@
+#!/bin/bash
+# modify files
+
+
+# set iplist from $1
+if [ -z $1 ];then
+    echo "Useage: $0 {iplist file name}"
+    echo "For example:"
+    echo "      $0 ./iplist"
+    echo ""
+    exit 1
+    elif [ ! -f $1 ];then
+        echo "Invaild file."
+        exit 2
+fi
+IL=$1
+
+verify () {
+    case $ver in
+            y)
+            break
+            ;;
+            n)
+            echo "Reinput ! "
+        continue
+            ;;
+            *)
+            echo "Reinput ! "
+        continue
+    esac
+}
+
+# new file/dir path
+while :
+do
+    read -p "The new file/dir path: " np
+    read -p "Verify:$np ,right? (y/n) " ver
+    verify
+done
+
+# destination path
+while :
+do
+    read -p "Destination path : " dp
+    read -p "Verify:$dp ,right? (y/n) " ver
+    verify
+done
+
+# scp and create script
+while read ip;do
+    echo -e "\n\e[32mResult of $ip:\e[0m"
+    /usr/bin/rsync --delete -avze ssh $np $ip:$dp
+    #yes|scp -r $np $ip:$dp
+done < $IL
